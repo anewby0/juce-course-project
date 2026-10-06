@@ -139,6 +139,8 @@ void PluginProcessor::setStateInformation(const void* data, int sizeInBytes) {
 
 // This creates new instances of the plugin.
 // This function definition must be in the global namespace.
+// returns a raw point to a freshly created processor instance
+// this is the entry point to the code, analogous to MAIN
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter() {
   return new tremolo::PluginProcessor();
 }
