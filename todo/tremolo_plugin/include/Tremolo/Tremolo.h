@@ -6,11 +6,12 @@ public:
   // ?? what is this for
   enum class LfoWaveform : size_t { //what is size_t type?
     sine = 0,
+    triangle = 1,
   };
 
   Tremolo() {
     for (auto& lfo : lfos) { //iterating through references
-      lfo.setFrequency(60.f /* Hz */, true); //2nd arg allows instantly changing frequency instead of smoothing
+      lfo.setFrequency(5.f /* Hz */, true); //2nd arg allows instantly changing frequency instead of smoothing
     }
   }
 
@@ -28,7 +29,14 @@ public:
     }
   }
 
+  void setLfoWaveform(LfoWaveform waveform) {
+    jassert(waveform == LfoWaveform::sine || waveform == LfoWaveform::triangle);
+    lfoToSet = waveform;
+  }
+
   void process(juce::AudioBuffer<float>& buffer) noexcept {
+    updateLfoWaveform();
+    
     // this is frame-wise processing because we iterate over frames first
     for (const auto frameIndex : std::views::iota(0, buffer.getNumSamples())) {
     
@@ -69,16 +77,28 @@ private:
     //[]()
   };
   */
-  std::array<juce::dsp::Oscillator<float>, 1u> lfos{
-    juce::dsp::Oscillator<float>{ [](auto phase){ return std::sin(phase); } }
-  };
+  static float triangle(float phase) { //static so not dependent on a temelo class instance
+    const auto ft = phase / juce::MathConstants<float>::twoPi;
+    return 4.f * std::abs(ft - std::floor(ft + 0.5f)) - 1.f;
+  }
 
   //
   float getNextLfoValue() {
-    return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f);
+    return lfos[juce::toUnderlyingType(currentLfo)].processSample(0.f); //what is this casting ;-;
   }
 
-  LfoWaveform currentLfo = LfoWaveform::sine;
+  void updateLfoWaveform() {
+    if (currentLfo != lfoToSet) {
+      currentLfo = lfoToSet;
+    }
+  }
 
+  std::array<juce::dsp::Oscillator<float>, 2u> lfos{
+    juce::dsp::Oscillator<float>{ [](auto phase){ return std::sin(phase); }},
+    juce::dsp::Oscillator<float>{triangle}
+  };
+
+  LfoWaveform currentLfo = LfoWaveform::triangle;
+  LfoWaveform lfoToSet = currentLfo;
 };
 }  // namespace tremolo

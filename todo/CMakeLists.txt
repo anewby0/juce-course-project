@@ -54,11 +54,11 @@ cpmaddpackage(
 # Adds compiler warning utilities & other.
 include(cmake/CompilerWarnings.cmake)
 
-# if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-#  # Sets the Windows VST3 installation location to one
-#  # that doesn't require elevated permissions
-#  set_directory_properties(PROPERTIES JUCE_VST3_COPY_DIR "C:/Program Files/Common Files/VST3")
-#endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+ # Sets the Windows VST3 installation location to one
+ # that doesn't require elevated permissions
+ set_directory_properties(PROPERTIES JUCE_VST3_COPY_DIR "C:/Program Files/Common Files/VST3")
+endif()
 
 # Adds a plugin target.
 set(TREMOLO_PLUGIN_NAME "TremeloTest")
