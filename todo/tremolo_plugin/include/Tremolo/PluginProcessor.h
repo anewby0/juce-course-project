@@ -35,6 +35,7 @@ public:
 
 private:
   // TODO: add parameters
+  Parameters parameters{*this}; //new!
 
   Tremolo tremolo;
 
